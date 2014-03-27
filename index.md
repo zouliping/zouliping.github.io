@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Hello World!
+title: In me the tiger sniffes the rose.
 tagline: Supporting tagline
 ---
 {% include JB/setup %}
