@@ -1,16 +1,20 @@
-关于Jena的简介在很多博客中都能看到，例如对Jena的简单理解和一个例子，使用Jena将本体存入MySQL，Jena进阶等。在入门的时候，看这些文章总是很疑惑，对于存入数据库后的操作一无所知。因此，在做项目之余，把使用到的一些方法记录下来，以供将来查阅。
+关于Jena的简介在很多博客中都能看到，例如[对Jena的简单理解和一个例子](http://imarine.blog.163.com/blog/static/51380183200812774739130/)，[使用Jena将本体存入MySQL](http://imarine.blog.163.com/blog/static/51380183200822775118211/)，[Jena进阶](http://blog.csdn.net/skiffloveblue/article/details/9355925)等。在入门的时候，看这些文章总是很疑惑，对于存入数据库后的操作一无所知。因此，在做项目之余，把使用到的一些方法记录下来，以供将来查阅。
+
 ###将本体持久化到数据库
+
 首先，还是不能免俗，说说如何将本体持久化到数据库的方法。总体的操作流程是将本体从owl文件中读出，建立一个数据库的连接，将Model存入数据库。这个过程的操作比较简单，见如下代码。其中需要注意的一点是：在这里的url设置是不正确的，这样设置的结果将导致中文乱码，正确的设置方法参见本文最后提到的问题解决方案。
 
-{ highlight java }
+``` Java
 private final static String driver = "com.mysql.jdbc.Driver";
-private final static String url = "jdbc:mysql://localhost/dbname";
-private final static String db = "MySQL";
-private final static String user = "your user name";
-private final static String pwd = "your password";
-
-public static void main(String[] args) {
-	try {
+	private final static String url = "jdbc:mysql://localhost/dbname";
+	private final static String db = "MySQL";
+	private final static String user = "your user name";
+	private final static String pwd = "your password";
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		try {
 			IDBConnection con = getConnection(url, user, pwd, db);
 
 			Class.forName(driver);
@@ -26,29 +30,29 @@ public static void main(String[] args) {
 		}
 	}
 
-/**
-* get db connection
-* 
-* @param dbUrl
-* @param dbUser
-* @param dbPwd
-* @param dbName
-* @return
-*/
-public static DBConnection getConnection(String dbUrl, String dbUser,
+	/**
+	 * get db connection
+	 * 
+	 * @param dbUrl
+	 * @param dbUser
+	 * @param dbPwd
+	 * @param dbName
+	 * @return
+	 */
+	public static DBConnection getConnection(String dbUrl, String dbUser,
 			String dbPwd, String dbName) {
 		return new DBConnection(dbUrl, dbUser, dbPwd, dbName);
 	}
 
-/**
-* read owl file, create the ontModel, and store in db
-* 
-* @param conn
-* @param name
-* @param filePath
-* @return
-*/
-public static OntModel createModel(IDBConnection conn, String name,
+	/**
+	 * read owl file, create the ontModel, and store in db
+	 * 
+	 * @param conn
+	 * @param name
+	 * @param filePath
+	 * @return
+	 */
+	public static OntModel createModel(IDBConnection conn, String name,
 			String filePath) {
 		ModelMaker maker = ModelFactory.createModelRDBMaker(conn);
 		Model model = maker.createModel(name);
@@ -73,5 +77,288 @@ public static OntModel createModel(IDBConnection conn, String name,
 
 		OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
 		return ModelFactory.createOntologyModel(spec, model);
-}
-{ endhighlight }
+	}
+```
+
+执行了上面的代码，会发现在MySQL数据库中可以看见生成的七张表。
+{% img center /images/jena.jpeg 'images' %} 
+
+每张表存放的内容可以简单了解一下。主要关注的表是jena_g1t1_stmt，其存放了本体的数据，本体以三元组的形式存放在此表中。其中陈述表是指下表中的前两个表。
+
+<table>
+	<tr>
+		<td>表名</td>
+		<td>存储</td>
+	</tr>
+	<tr>
+		<td>jena_g1t1_stmt</td>
+		<td>本体数据</td>
+	</tr>
+	<tr>
+		<td>jena_g1t0_reif</td>
+		<td>经过处理的本体数据</td>
+	</tr>
+	<tr>
+		<td>jena_sys_stmt</td>
+		<td>系统元数据</td>
+	</tr>
+	<tr>
+		<td>jena_graph</td>
+		<td>每一个用户图的名字和唯一标志符</td>
+	</tr>
+	<tr>
+		<td>jena_long_lit</td>
+		<td>陈述表中不便于直接存储的长字符常量</td>
+	</tr>
+	<tr>
+		<td>jena_long_uri</td>
+		<td>陈述表中不便于直接存储的长URI</td>
+	</tr>
+	<tr>
+		<td>jena_prefix</td>
+		<td>URI的前缀</td>
+	</tr>
+</table>
+
+此时，完成了将本体的持久化，接下来想要对本体进行一些操作该怎么办？
+
+###将本体从数据库中读取成OntModel
+
+对本体进一步的操作，需要完成的第一步工作是将本体以OntModel的形式从数据库中读出来。这一步的操作见下述代码。
+
+```Java
+	private final static String driver = "com.mysql.jdbc.Driver";
+	private final static String url = "jdbc:mysql://localhost/dbname";
+	private final static String db = "MySQL";
+	private final static String user = "your user name";
+	private final static String pwd = "your password";
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		try {
+			IDBConnection con = getConnection(url, user, pwd, db);
+
+			Class.forName(driver);
+
+			OntModel model = getModelFromDB(con,"test");
+			printModel(model);
+
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * get db connection
+	 * 
+	 * @param dbUrl
+	 * @param dbUser
+	 * @param dbPwd
+	 * @param dbName
+	 * @return
+	 */
+	public static DBConnection getConnection(String dbUrl, String dbUser,
+			String dbPwd, String dbName) {
+		return new DBConnection(dbUrl, dbUser, dbPwd, dbName);
+	}
+
+	/**
+	 * get OntModel from db
+	 * 
+	 * @param con
+	 * @param name
+	 * @return
+	 */
+	public static OntModel getModelFromDB(IDBConnection con, String name) {
+		ModelMaker maker = ModelFactory.createModelRDBMaker(con);
+		Model model = maker.getModel(name);
+		OntModel newmodel = ModelFactory.createOntologyModel(
+				getModelSpec(maker), model);
+		return newmodel;
+	}
+
+	/**
+	 * get model spec
+	 * 
+	 * @param maker
+	 * @return
+	 */
+	public static OntModelSpec getModelSpec(ModelMaker maker) {
+		OntModelSpec spec = new OntModelSpec(OntModelSpec.OWL_MEM);
+		spec.setImportModelMaker(maker);
+		return spec;
+	}
+
+	/**
+	 * print model
+	 * 
+	 * @param model
+	 */
+	public static void printModel(OntModel model) {
+		for (Iterator<OntClass><span style="font-family: 'Myriad Pro';"> i = model.listClasses(); i.hasNext();) {</span>
+			OntClass oc = i.next();
+			System.out.println(oc.getLocalName());
+		}
+	}
+```
+
+进行此步操作时，会遇到一个推理机的设置问题。这个问题稍后进行一个详细的解释。
+执行了将本体从数据库读出的操作，可以打印出本体中的所有类，直观看到本体的类。获得了OntModel，可以进行其他很多的操作，如读取本体中所有的类、属性及实例，读取本体类与类的关系，给本体增加实例等等。
+
+###读取本体的所有类及类的属性
+
+使用listDeclaredProperty方法打印出的类的属性，这样打印属性在一般情况下是没有问题的。但是如果一个属性的定义域是一个集合（Collection）的时候，不管是打印集合中的哪个类都找不到该属性。当时看了[这篇博文](http://mjai.blog.163.com/blog/static/1232801102009798158644/)，以为成功了，但是在获取Model的时候设置推理机为OWL_MEM_MICRO_RULE_INF，虽然可以找到属于集合的属性，但是同时会找到一些我们所不需要的属性，如自带的某些属性OntProperty等等。
+
+```Java
+	/**
+	 * get all classes and properties
+	 * 
+	 * @param model
+	 */
+	public static void getClasses(OntModel model) {
+		for (ExtendedIterator<OntClass> ei = model.listClasses(); ei.hasNext();) {
+			OntClass oc = ei.next();
+			System.out.println(oc.getLocalName());
+			for (ExtendedIterator<OntProperty> eip = oc
+					.listDeclaredProperties(); eip.hasNext();) {
+				OntProperty op = eip.next();
+				System.out.println(op.getLocalName());
+			}
+		}
+	}
+```
+
+###读取一个类的所有实例
+
+读取实例，可以用OntClass的listInstances()方法和OntModel的listIndividuals()方法。前者获取的是一个类的所有实例，后者获取的是整个本体中的实例。
+
+```Java
+	/**
+	 * get a individual
+	 * 
+	 * @param model
+	 * @param prefix
+	 */
+	public static void getIndivProperties(OntModel model, String prefix) {
+		OntClass w = model.getOntClass(prefix + "Writing");
+		for (ExtendedIterator<?> i = w.listInstances(); i.hasNext();) {
+			Individual individual = (Individual) i.next();
+			System.out.println(individual.getLocalName());
+			for (StmtIterator si = individual.listProperties(); si.hasNext();) {
+				StatementImpl sti = (StatementImpl) si.next();
+				System.out.println(sti.getSubject().getLocalName() + "--"
+						+ sti.getPredicate().getLocalName() + "--"
+						+ sti.getObject());
+			}
+		}
+	}
+```
+
+###获取两个类的关系
+
+获取两个类的关系时，使用了sparql语言查询。Jena API本身不提供直接的方法以获取两个类的关系。
+
+```Java
+	/**
+	 * Get relation (ObjectPropery) between two classes
+	 * 
+	 * @param classname1
+	 * @param classname2
+	 * @return relationValue
+	 */
+	public static String getRelation(OntModel model, String classname1,
+			String classname2) {
+		// Get prefixes
+		String defaultPrefix = model.getNsPrefixURI("");
+		String rdfsPrefix = model.getNsPrefixURI("rdfs");
+		String owlPrefix = model.getNsPrefixURI("owl");
+
+		// Create a new query
+		String queryString = "PREFIX default: <" + defaultPrefix + ">\n"
+				+ "PREFIX rdfs: <" + rdfsPrefix + ">\n" + "PREFIX owl: <"
+				+ owlPrefix + ">\n" + "SELECT ?relation\n"
+				+ "WHERE { ?relation rdfs:domain default:" + classname1
+				+ ".?relation rdfs:range default:" + classname2 + "}";
+
+		// Create the query
+		Query query = QueryFactory.create(queryString);
+		// Execute the query and obtain results
+		QueryExecution qe = QueryExecutionFactory.create(query, model);
+		ResultSet results = qe.execSelect();
+
+		// Get property value
+		String relationValue;
+		if (results.hasNext()) {
+			QuerySolution result = results.nextSolution();
+			relationValue = result.get("relation").toString()
+					.substring(defaultPrefix.length());
+		} else {
+			relationValue = null;
+		}
+
+		// Important - free up resources used running the query
+		qe.close();
+		return relationValue;
+	}
+```
+
+###创建一个实例
+
+```Java
+	/**
+	 * create a individual
+	 * 
+	 * @param model
+	 * @param prefix
+	 */
+	public static void createIndiv(OntModel model, String prefix) {
+		OntClass oc = model.getOntClass("classname");
+		Individual individual = oc.createIndividual("individualname");
+		OntProperty op = model.getOntProperty(prefix + "propertyname");
+		individual.addProperty(op, "propertyvalue");
+	}
+```
+
+诸如此类的代码片段还有很多，在实际使用的时候，详细的内容可以查阅Jena的API文档，找到所需要的方法。不过在使用Jena API的时候，需要考虑效率问题。
+
+接下来说两个遇到的问题:
+
+1. 中文乱码问题
+
+在使用Jena API将本体持久化到数据库时出现的中文乱码的问题。
+注意OWL文件的编码和在从文件读取时设置”UTF8“。
+还有最重要的一点是在写数据库的URL时应该写成：
+`jdbc:mysql://localhost/dbname?useUnicode=true&characterEncoding=utf8</span>  `
+
+2. 推理机设置问题
+
+在查询类的属性时，需要使用Jena的推理机，否则使用listDeclaredProperties方法直接打印只能找到一个类的独有属性，而无法找到属于多个类的公有属性。
+
+```Java
+	/**
+	 * get model spec
+	 * 
+	 * @param maker
+	 * @return
+	 */
+	public static OntModelSpec getModelSpec(ModelMaker maker) {
+		OntModelSpec spec = new OntModelSpec(
+				OntModelSpec.OWL_MEM_MICRO_RULE_INF);
+		spec.setImportModelMaker(maker);
+		return spec;
+	}
+```
+
+设置成OWL_MEM_MICRO_RULE_INF可以获取到一个类的所有属性，但在获取类的时候除了我们定义的类，还会得到系统的一些类。这个问题暂时不知道如何解决。
+
+
+
+
+
+
+
