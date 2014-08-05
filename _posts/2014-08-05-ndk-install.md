@@ -39,8 +39,6 @@ NDK是Native Development Kit，Google开发的一套开发和编译工具集，�
 3. 从命令行进入该项目文件夹，执行`ndk-build`。
 4. 编译运行。
 
-小问题：在项目使用Android 2.3时，出现`java.nio.BufferOverflowException`异常，改到Android 4.4，则可以运行。
-
 如果成功安装和配置了NDK，运行结果如下：
 
 ![安装成功]({{ site.url }}/assets/images/ndk1.jpg)
