@@ -4,8 +4,6 @@ title: Blog of zouliping
 ---
 {% include JB/setup %}
 
-Here's a "posts list".
-
 <ul class="posts">
   {% for post in site.posts %}
     <li>
