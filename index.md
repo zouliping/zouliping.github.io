@@ -10,7 +10,7 @@ Here's a "posts list".
   {% for post in site.posts %}
     <li>
       <span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a>
-      {{ post.excerpt }}
+      {{ post.excerpt | remove: '<p>' | remove: '</p>' }}
     </li>
   {% endfor %}
 </ul>
