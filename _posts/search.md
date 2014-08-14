@@ -1,0 +1,87 @@
+
+---
+layout: post
+title: Android Search Dialog and Search Widget使用
+category: Android
+tags: [Android]
+---
+
+##search dialog or search widget
+
+* search dialog是一个android系统能够控制的组件，只能放置在Activity的顶部。
+
+* search widget是SearchView的一个实例，可放置在Activity的任意位置。仅在Android 3.0才可使用。
+
+当用户执行一个搜索时，系统将查询提交给开发者指定的查询执行的Activity，并可以提供提示。
+
+用户使用search dialog或the search widget来搜索时，系统会创建一个Intent，Intent中包含用户的查询，启动执行搜索的Activity，传递这个Intent。
+
+###创建搜索配置
+
+在res/xml/目录下创建一个searchable.xml文件。系统使用这个文件来创建一个SearchableInfo对象，但开发者并不能在运行时手动创建此对象。
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<searchable xmlns:android="http://schemas.android.com/apk/res/android"
+    android:label="@string/app_name"
+    android:hint="@string/search_hint">
+</searchable>
+```
+
+必须包含android:label，指向应用的名字。推荐包含android:hint属性，提供搜索的提示。
+
+###创建搜索Activity
+
+搜索Activity用于接收查询和展示搜索结果。
+
+声明这个搜索Activity接收带有ACITON_SEARCH的Intent，并指明使用的搜索配置，即上一步中创建的xml文件。
+
+```
+<application>
+    <activity android:name=".SearchableActivity" >
+        <intent-filter>
+            <action android:name="android.intent.action.SEARCH" />
+        </intent-filter>
+        <meta-data android:name="android.app.searchable"
+                  android:resource="@xml/searchable"/>
+    </activity>
+</application>
+```
+
+###执行搜索
+
+执行搜索分为三个步骤：
+
+* 接收查询
+
+```
+Intent intent = getIntent();
+    if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+      String query = intent.getStringExtra(SearchManager.QUERY);
+      doSearch(query);
+    }
+```
+
+* 执行搜索
+	
+搜索分为两类，一个是查询SQLite中的数据，一个是查询服务器端的数据。
+
+* 展示结果
+	
+展示结果一般使用ListView。
+
+在触发搜索的Activity，在其AndroidManifest.xml中必须声明执行搜索的Activity
+
+```
+<activity android:name=".OtherActivity" ... ]]>
+        <!-- enable the search dialog to send searches to SearchableActivity -->
+        <meta-data android:name="android.app.default_searchable"
+                  android:value=".SearchableActivity" />
+    </activity>
+```
+
+###结果
+
+点击按钮，出现search view，如图
+
+![image]({{ site.url }}/assets/images/search.jpg)
