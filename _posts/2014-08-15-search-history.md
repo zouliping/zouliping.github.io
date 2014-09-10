@@ -5,7 +5,7 @@ category: Android
 tags: [Android]
 comments: true
 image:
-  feature: texture-feature-05.jpg
+  feature: texture-feature-02.jpg
 ---
 
 <section id="table-of-contents" class="toc">

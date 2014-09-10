@@ -3,7 +3,21 @@ layout: post
 title: NDK在Mac OS X下的安装配置
 category: NDK
 tags: [NDK]
+comments: true
+image:
+  feature: texture-feature-02.jpg
 ---
+
+<section id="table-of-contents" class="toc">
+  <header>
+    <h3>Overview</h3>
+  </header>
+<div id="drawer" markdown="1">
+*  Auto generated table of contents
+{:toc}
+</div>
+</section>
+
 
 ###JNI
 
