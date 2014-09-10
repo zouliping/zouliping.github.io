@@ -1,13 +1,6 @@
 ---
-layout: page
-title: Blog of zouliping
+layout: home
+excerpt: "A responsive Jekyll theme with editorial tendencies by designer Michael Rose."
+image:
+  feature: texture-feature-02.jpg
 ---
-{% include JB/setup %}
-
-<ul class="posts">
-  {% for post in site.posts %}
-    <h3>
-      <span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a>
-    </h3>
-  {% endfor %}
-</ul>
