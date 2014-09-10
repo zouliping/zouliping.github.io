@@ -4,7 +4,6 @@ title:            Blog of zouliping
 locale:           en_CN
 url:              http://echo.vars.me
 url:              http://zouliping.github.io
-url:              http://localhost:4000
 
 
 # Jekyll configuration
