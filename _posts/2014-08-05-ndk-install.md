@@ -6,6 +6,7 @@ tags: [NDK]
 comments: true
 image:
   feature: texture-feature-02.jpg
+excerpt: JNI是Java Native Interface，用来沟通Java代码和C/C++代码的桥梁。通过JNI，Java代码可以调用C/C++代码，且C/C++代码也可以回调Java代码。为什么使用JNI？一般是以下几个原因
 ---
 
 <section id="table-of-contents" class="toc">

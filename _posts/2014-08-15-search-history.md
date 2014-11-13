@@ -6,6 +6,7 @@ tags: [Android]
 comments: true
 image:
   feature: texture-feature-02.jpg
+excerpt: 在[上一篇博客](http://echo.vars.me/android/2014/08/14/search/)的基础之上，使用Search Dialog来记录搜索的历史。记录用户的搜索记录可以提高用户搜索的效率，例如在用户搜索过`test`后，用户输入了`t`，将用户搜索过的以`t`开头的词`test`显示出来。
 ---
 
 <section id="table-of-contents" class="toc">
