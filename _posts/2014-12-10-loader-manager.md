@@ -6,7 +6,7 @@ tags: Android ContentProvider LoaderManager Loader
 comments: true
 image:
   feature: texture-feature-02.jpg
-excerpt: 
+excerpt: 在Android中实现数据的加载，总的来说有两种方式。一种是开发者利用AsyncTask（当然，也可使用Thread + Handler的方式，仅以AsyncTask作代表）在新的线程中开启数据库，读取数据，在数据读取完毕后刷新页面，展示数据。这种方式简单易懂，实现起来容易，但有点繁琐，需要开发者手动管理SQLite。在此不讨论在UI线程进行耗时的数据加载操作。另一种方式使用Content Provider，通常情况下数据也是存储在SQLite中，本文想要详细阐述的正是此种方式。
 ---
 
 <section id="table-of-contents" class="toc">
