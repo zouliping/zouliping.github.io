@@ -6,7 +6,7 @@ tags: Material Design Android AppCompat
 comments: true
 image:
   feature: texture-feature-02.jpg
-excerpt: 
+excerpt: 很久以前就想写这篇文章了，Android Lollipop 已经发布这么久了，迟迟没有整理，一直拖到了现在。肯定得说的是 Material Design。所谓 Material Design，直接引用官方的文档，还是不翻译了。
 ---
 
 <section id="table-of-contents" class="toc">
