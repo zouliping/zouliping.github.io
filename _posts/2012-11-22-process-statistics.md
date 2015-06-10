@@ -7,15 +7,6 @@ image:
   feature: texture-feature-02.jpg
 excerpt: 在做这次实验的时候，一定要耐心一点。我当时做的时候就因为在修改的过程中出现了一点小小的失误，导致了整个实验重新来过一遍。为了避免这样的情况发生，一定要记住修改的时候，要注意修改的内容无误。
 ---
-<section id="table-of-contents" class="toc">
-  <header>
-    <h3>Overview</h3>
-  </header>
-<div id="drawer" markdown="1">
-*  Auto generated table of contents
-{:toc}
-</div>
-</section>
 
 在做这次实验的时候，一定要耐心一点。我当时做的时候就因为在修改的过程中出现了一点小小的失误，导致了整个实验重新来过一遍。为了避免这样的情况发生，一定要记住修改的时候，要注意修改的内容无误。
 
