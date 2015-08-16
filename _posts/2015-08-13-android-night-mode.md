@@ -312,6 +312,4 @@ mNightModeHelper = new NightModeHelper(this, R.style.AppTheme_Light);
 
 &emsp;&emsp;这三个方案中，第一个是绝对不可取的，开启车载模式的代价太大。第二个和第三个看起来实现效果一样，但是从代码层面来看，第三个要优于第二个。闪屏的问题还需后续再研究。
 
-本文的 Demo 可以在 https://github.com/zouliping/AndroidNightMode 。
-
-
+本文的 Demo 可以在 https://github.com/zouliping/AndroidNightMode 找到。这个 Demo 的三种方式会相互影响，所以请一次仅设置一种方式，在切回正常模式后再尝试下一种方案。
