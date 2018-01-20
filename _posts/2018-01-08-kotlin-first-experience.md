@@ -2,6 +2,7 @@
 layout: post
 title: Kotlin 初体验
 category: Kotlin
+tags: Android Kotlin 初体验
 comments: true
 image:
   feature: texture-feature-02.jpg
