@@ -57,6 +57,8 @@ Weex 是阿里开源的一个「使用 Web 开发体验来开发高性能原生�
 * 在 Android 中的 .9 图显示有问题，拉伸的不太正确。目前的解决方案是将 .9 图放在 native 中，但需要注意的是在 native 中需要手动引用一下，否则在打 release 包的时候会因为没有引用而被排除。
 * load more 的实现方式是使用 loading 圈的 `appear` 和 `disappear` 来触发，这样实现有一个问题，如果请求的数量较少，假设只有一条数据的情况，不足以占满屏幕，load more 仅会被触发一次，因为没有 `disappear`。
 * 在与 iOS 使用同一份代码中，也遇到了一些问题，并不如官方所说的「写一次，处处运行」那么轻松。Android 与 iOS 引用 native 图片的路径写法不一致。点击左上角返回按钮，Android 中可以写 `navigator.close();`，在 iOS 不生效，只能改成 `navigator.pop();`。诸如此类的问题。
+* 在 Android 和 iOS 上 text 上下的 padding 是明显不同的，在实现一个标签由文案 + padding 撑开画上一个圆弧背景的时候，就需要对 Android 和 iOS 写上不同的 padding 了。而且 Android 是支持 padding 组合起来写的，类似这样，`padding: 2wx 7wx;`，而 iOS 是不支持的，`padding-left: 7wx; padding-right: 7wx;`。
+* iOS 上如果想要不超出布局边界，则需要设置 `overflow: hidden;`。
 
 ### 后续
 
