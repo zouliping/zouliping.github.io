@@ -1,4 +1,23 @@
-从一个小 bug 回顾 View 的测量
+--- 
+layout: post
+title: 从一个小 bug 回顾 View 的测量
+category: Android
+tags: Android, View
+comments: true
+image:
+  feature: texture-feature-02.jpg
+excerpt: 从一个上线前的流式布局 FlowLayout 小 bug 入手回顾一下 View 的 measure。
+---
+
+<section id="table-of-contents" class="toc">
+  <header>
+    <h3>Overview</h3>
+  </header>
+<div id="drawer" markdown="1">
+*  Auto generated table of contents
+{:toc}
+</div>
+</section>
 
 ### Bug 的前因后果
 
