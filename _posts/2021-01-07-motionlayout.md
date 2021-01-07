@@ -1,3 +1,24 @@
+--- 
+layout: post
+title: 使用 MotionLayout 实现展开折叠动画
+category: Android
+tags: Android, MotionLayout
+comments: true
+image:
+  feature: texture-feature-02.jpg
+excerpt: MotionLayout 是 ConstraintLayout 的子类，可以用于布局的状态转换添加动画效果。本文介绍了如何使用 MotionLayout 实现展开折叠动画。
+---
+
+<section id="table-of-contents" class="toc">
+  <header>
+    <h3>Overview</h3>
+  </header>
+<div id="drawer" markdown="1">
+*  Auto generated table of contents
+{:toc}
+</div>
+</section>
+
 ### MotionLayout 是什么
 
 MotionLayout 是 ConstraintLayout 的子类，可以用于布局的状态转换添加动画效果。MotionLayout 完全是声明式的，使用 XML 描述转换。需要注意的是 MotionLayout 的所有直接子 View 都需赋予一个 id，否则会报 All children of ConstraintLayout must have ids to use ConstraintSet 错误。
