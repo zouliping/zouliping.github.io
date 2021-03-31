@@ -37,6 +37,8 @@ excerpt: 首次接入 Google Pay 走了不少弯路，遇到很多奇奇怪怪�
 5. 监听 PurchasesUpdatedListener，BillingClient.BillingResponseCode.OK 时，对已购买的 purchase（it.purchaseState == Purchase.PurchaseState.PURCHASED）进行服务端的校验
 6. 服务端校验成功后，调用 consumeAsync，消耗商品，使得商品可以再次购买
 
+勘误（20210331）：这处流程存在一个漏洞，如果调用 consumeAsync 失败，谷歌将会在三天后进行退款，但服务端在校验通过后即履约，会造成资损。因此上述的流程，需要在 consumeAsync 成功后通知服务端，然后再进行履约，确保链路的完整性。
+
 按照上述的流程可以完成大致一次订单的购买，但大概率会遇到种种困难，下文会一一阐述我们是如何解决的。
 
 ## 遇到的问题
